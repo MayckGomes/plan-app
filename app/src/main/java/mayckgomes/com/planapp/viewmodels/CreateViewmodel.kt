@@ -3,7 +3,9 @@ package mayckgomes.com.planapp.viewmodels
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.map
+import mayckgomes.com.planapp.database.Day
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -93,6 +95,18 @@ class CreateViewmodel: ViewModel(){
 
         _dayList.value = listaDias
 
+    }
+
+
+    private val _daysSaved = MutableStateFlow<MutableList<Day>>(mutableListOf())
+    val daysSaved = _daysSaved.asStateFlow()
+
+    fun addDay(day: String, text: String){
+        _daysSaved.value.add(Day(day = day, text = text))
+    }
+
+    fun delDay(day: Day){
+        _daysSaved.value.removeAt(_daysSaved.value.indexOf(day))
     }
 
 }

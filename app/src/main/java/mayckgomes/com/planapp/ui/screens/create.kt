@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
 import mayckgomes.com.planapp.ui.theme.DarkGray
@@ -51,9 +53,9 @@ import mayckgomes.com.planapp.ui.theme.White
 import mayckgomes.com.planapp.viewmodels.CreateViewmodel
 import java.nio.file.WatchEvent
 
-@Preview(showSystemUi = true)
+
 @Composable
-fun CreateScreen(){
+fun CreateScreen(navController: NavController){
 
     val viewmodel: CreateViewmodel = viewModel()
 
@@ -66,6 +68,8 @@ fun CreateScreen(){
     val dayList by viewmodel.dayList.collectAsState()
 
     val dayNumber by viewmodel.dayNumber.collectAsState()
+
+    //val daySavedList by viewmodel.daysSaved.collectAsState()
 
     var text by rememberSaveable {
         mutableStateOf("")
@@ -88,7 +92,7 @@ fun CreateScreen(){
         ){
 
             IconButton(
-                onClick = {TODO("voltar")},
+                onClick = {navController.popBackStack()},
                 modifier = Modifier
                     .border(border = BorderStroke(1.dp,Black), shape = RoundedCornerShape(25.dp))) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -259,7 +263,7 @@ fun CreateScreen(){
                            modifier = Modifier.fillMaxWidth(),
                            shape = RoundedCornerShape(12.dp),
                            onClick = {
-
+                                viewmodel.addDay(day = dayList[dayNumber], text = text)
                            }
                        ) {
                            StyledText("Salvar")
@@ -269,6 +273,10 @@ fun CreateScreen(){
 
                }
 
+               Spacer(Modifier.size(52.dp))
+
+               StyledText("Dias Salvos", fontSize = 24.sp)
+
 
 
            }
@@ -277,4 +285,11 @@ fun CreateScreen(){
 
     }
 
+}
+
+
+@Preview(showSystemUi = true)
+@Composable
+fun CreateScreenPreview(){
+    CreateScreen(rememberNavController())
 }

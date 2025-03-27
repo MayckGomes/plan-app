@@ -30,6 +30,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import mayckgomes.com.planapp.Create
 import mayckgomes.com.planapp.R
 import mayckgomes.com.planapp.ui.elements.CardPlan
 import mayckgomes.com.planapp.ui.elements.StyledText
@@ -39,7 +42,7 @@ import mayckgomes.com.planapp.ui.theme.White
 import mayckgomes.com.planapp.viewmodels.ViewViewmodel
 
 @Composable
-fun HomeScreen(){
+fun HomeScreen(navController: NavController){
 
     val viewmodel = ViewViewmodel()
     
@@ -146,7 +149,7 @@ fun HomeScreen(){
                 contentColor = Black,
                 text = {Text("Novo")},
                 icon = {Icon(Icons.Default.Add,contentDescription = "New")},
-                onClick = {TODO()}
+                onClick = {navController.navigate(Create)}
             )
         }
     }
@@ -155,5 +158,5 @@ fun HomeScreen(){
 @Preview(showSystemUi = true)
 @Composable
 fun HomeScreenPreview(){
-    HomeScreen()
+    HomeScreen(rememberNavController())
 }

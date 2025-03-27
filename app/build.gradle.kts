@@ -64,4 +64,8 @@ dependencies {
 
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
 
+    val nav_version = "2.8.4"
+    
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
 }

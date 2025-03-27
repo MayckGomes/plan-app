@@ -13,6 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import kotlinx.serialization.Serializable
+import mayckgomes.com.planapp.ui.screens.CreateScreen
 import mayckgomes.com.planapp.ui.screens.HomeScreen
 import mayckgomes.com.planapp.ui.theme.PlanAppTheme
 
@@ -23,10 +29,44 @@ class MainActivity : ComponentActivity() {
         setContent {
             PlanAppTheme {
 
-                HomeScreen()
+                Navigation()
 
             }
         }
     }
 }
 
+@Serializable
+object Home
+
+@Serializable
+object View
+
+@Serializable
+object Create
+
+@Serializable
+object Edit
+
+@Composable
+fun Navigation(){
+
+    val navControler = rememberNavController()
+
+    NavHost(navControler, startDestination = Home,
+        //enterTransition = {},
+        builder = {
+
+            composable<Home> {
+                HomeScreen(navControler)
+            }
+
+            composable<Create>{
+                CreateScreen(navControler)
+            }
+
+        }
+
+        )
+
+}
