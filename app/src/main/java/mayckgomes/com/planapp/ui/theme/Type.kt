@@ -15,13 +15,8 @@ val poppins = FontFamily(
 )
 
 val Typography = Typography(
-
     bodyLarge = TextStyle(
-        fontFamily = FontFamily(
-            Font(R.font.poppins_regular),
-            Font(R.font.poppins_bold,FontWeight.Bold),
-            Font(R.font.poppins_semibold, FontWeight.SemiBold)
-        ),
+        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,

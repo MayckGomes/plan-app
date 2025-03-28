@@ -1,5 +1,6 @@
 package mayckgomes.com.planapp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,7 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -26,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +43,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,13 +53,13 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import mayckgomes.com.planapp.database.Day
+import mayckgomes.com.planapp.ui.elements.CardPlan
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
-import mayckgomes.com.planapp.ui.theme.DarkGray
 import mayckgomes.com.planapp.ui.theme.Gray
 import mayckgomes.com.planapp.ui.theme.White
 import mayckgomes.com.planapp.viewmodels.CreateViewmodel
-import java.nio.file.WatchEvent
 
 
 @Composable
@@ -67,17 +75,25 @@ fun CreateScreen(navController: NavController){
 
     val dayList by viewmodel.dayList.collectAsState()
 
-    val dayNumber by viewmodel.dayNumber.collectAsState()
+    val dayNumber by viewmodel.day.collectAsState()
 
-    //val daySavedList by viewmodel.daysSaved.collectAsState()
+    val daySavedList by viewmodel.daysSaved.collectAsState()
 
     var text by rememberSaveable {
         mutableStateOf("")
     }
 
+    val context = LocalContext.current
+
     var loading by rememberSaveable { mutableStateOf(false) }
 
     var isChoosed by rememberSaveable { mutableStateOf(false) }
+
+    var isClick by rememberSaveable { mutableStateOf(false) }
+
+    var keyboardActions = LocalSoftwareKeyboardController.current
+
+    viewmodel.Delete(context)
 
 
     Column(
@@ -85,6 +101,7 @@ fun CreateScreen(navController: NavController){
             .fillMaxSize()
             .background(color = White)
             .padding(30.dp, 40.dp)
+            .verticalScroll(rememberScrollState())
     ) {
 
         Row(
@@ -126,12 +143,11 @@ fun CreateScreen(navController: NavController){
 
                Row(
                    horizontalArrangement = Arrangement.SpaceBetween,
-                   modifier = Modifier.fillMaxSize()
+                   modifier = Modifier.fillMaxSize(1f)
                ) {
 
                    StyledText(month.toString())
 
-                   Spacer(Modifier.size(40.dp))
 
                    IconButton(
                        onClick = {
@@ -141,6 +157,7 @@ fun CreateScreen(navController: NavController){
                    }
 
                    DropdownMenu(
+                       containerColor = White,
                        expanded = isExpanded ,
                        onDismissRequest = {
                            viewmodel.closeMenu()
@@ -182,7 +199,10 @@ fun CreateScreen(navController: NavController){
                     loading = true
                     isChoosed = true
                     viewmodel.GetDaysOfMonth(monthNumber)
+                    loading = false
                     
+                } else {
+                    Toast.makeText(context,"Não é possivel selecionar essa opção", Toast.LENGTH_LONG).show()
                 }
 
             }
@@ -229,7 +249,8 @@ fun CreateScreen(navController: NavController){
 
                        IconButton(
                            onClick = {
-                               if(isChoosed && dayNumber != dayList.size){ viewmodel.nextDay() }
+                               if(isChoosed && dayNumber + 1 <= dayList.size - 1){ viewmodel.nextDay() }
+
                            }
                        ) {
                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "next date")
@@ -247,14 +268,16 @@ fun CreateScreen(navController: NavController){
                        .padding(horizontal = 43.dp)) {
 
                         StyledText("Descrição", fontWeight = FontWeight.Normal)
+
+
                         OutlinedTextField(
                             modifier = Modifier
-                                .width(285.dp)
-                                .height(47.dp),
+                                .width(285.dp),
                             value = text,
                             onValueChange = {text = it},
-                            label = {StyledText("Digite uma Descrição...", color= DarkGray, fontSize = 14.sp)},
-                            shape = RoundedCornerShape(12.dp)
+                            placeholder = {StyledText("Digite uma descrição...", color = Gray, fontSize = 12.sp)},
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(unfocusedTextColor = Black, focusedTextColor = Black),
                         )
 
                        Spacer(Modifier.size(17.dp))
@@ -263,7 +286,21 @@ fun CreateScreen(navController: NavController){
                            modifier = Modifier.fillMaxWidth(),
                            shape = RoundedCornerShape(12.dp),
                            onClick = {
-                                viewmodel.addDay(day = dayList[dayNumber], text = text)
+                               if (monthNumber == 0){
+
+                                   Toast.makeText(context,"Selecione um mês!!", Toast.LENGTH_LONG).show()
+
+                               } else if(text.isEmpty()){
+
+                                   Toast.makeText(context,"Digite uma descrição primeiro!", Toast.LENGTH_LONG).show()
+
+                               } else {
+
+                                   viewmodel.addDay(day = Day(day = dayList[dayNumber], text = text))
+                                   text = ""
+                                   viewmodel.nextDay()
+
+                               }
                            }
                        ) {
                            StyledText("Salvar")
@@ -277,7 +314,50 @@ fun CreateScreen(navController: NavController){
 
                StyledText("Dias Salvos", fontSize = 24.sp)
 
+               Spacer(Modifier.size(18.dp))
 
+               Box(
+                   modifier = Modifier
+                       .fillMaxWidth()
+                       .height(500.dp)
+                       .clip(RoundedCornerShape(12.dp))
+                       .background(color = Gray)
+               ){
+
+                   LazyColumn(
+                       horizontalAlignment = Alignment.CenterHorizontally,
+                       modifier = Modifier
+                           .fillMaxSize()
+                           .padding(10.dp)
+                   ) {
+                       items(daySavedList){ day ->
+                           CardPlan(day.day,day.text)
+                           Spacer(Modifier.size(17.dp))
+                       }
+                   }
+
+               }
+
+               Spacer(Modifier.size(20.dp))
+
+               OutlinedButton(
+                   modifier = Modifier.fillMaxWidth(),
+                   shape = RoundedCornerShape(12.dp),
+                   onClick = {
+                       isClick = true
+                       navController.popBackStack()
+                   }
+               ) {
+
+                   if (isClick){
+
+                       isClick = false
+                       viewmodel.Save(context, daySavedList)
+                       
+                   }
+                   StyledText("Salvar")
+
+               }
 
            }
 

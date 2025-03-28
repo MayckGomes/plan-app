@@ -2,6 +2,7 @@ package mayckgomes.com.planapp.ui.screens
 
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,37 +25,53 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import mayckgomes.com.planapp.Create
 import mayckgomes.com.planapp.R
+import mayckgomes.com.planapp.View
+import mayckgomes.com.planapp.database.Day
 import mayckgomes.com.planapp.ui.elements.CardPlan
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
 import mayckgomes.com.planapp.ui.theme.Gray
 import mayckgomes.com.planapp.ui.theme.White
+import mayckgomes.com.planapp.viewmodels.CreateViewmodel
 import mayckgomes.com.planapp.viewmodels.ViewViewmodel
 
 @Composable
 fun HomeScreen(navController: NavController){
 
-    val viewmodel = ViewViewmodel()
+    val viewmodel: ViewViewmodel = viewModel()
     
     val userName = viewmodel.GetUserName()
 
-    val dateList: MutableList<String> = mutableListOf()
+    val dateList by viewmodel.list.collectAsState()
+
+    val context = LocalContext.current
+
+    var isLoading by rememberSaveable {
+        mutableStateOf(true)
+    }
 
     LaunchedEffect(Unit) {
 
-        dateList.addAll(viewmodel.GetAllDates())
-
+        viewmodel.GetAllDates(context)
+        isLoading = false
     }
 
     Scaffold {padding ->
@@ -98,14 +116,14 @@ fun HomeScreen(navController: NavController){
                         Spacer(Modifier.size(36.dp))
 
                         IconButton(
-                            onClick = {},
+                            onClick = {navController.navigate(View)},
                             modifier = Modifier
                                 .padding(0.dp)
                                 .size(24.dp)
                                 .clip(RoundedCornerShape(8))
                                 .background(color = White)
                             ) {
-                            Icon(painterResource(R.drawable.eye), contentDescription = "See")
+                            Icon(painterResource(R.drawable.eye), contentDescription = "See", tint = Black)
                         }
                         Spacer(Modifier.size(18.dp))
 
@@ -118,19 +136,38 @@ fun HomeScreen(navController: NavController){
                                 .background(color = White)
                             ){
                             Icon(
-                                Icons.Default.Edit, contentDescription = "Edit"
+                                Icons.Default.Edit, contentDescription = "Edit", tint = Black
                             )
                         }
 
                     }
 
 
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
+                    if (isLoading){
 
-                        items(dateList){ key ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
 
+                            CircularProgressIndicator(color = Black)
+
+                        }
+
+                    } else {
+
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 15.dp)
+                        ) {
+
+                            items(dateList){ day ->
+
+                                CardPlan(day.day,day.text)
+                                Spacer(Modifier.size(10.dp))
+                            }
 
                         }
 
@@ -149,7 +186,8 @@ fun HomeScreen(navController: NavController){
                 contentColor = Black,
                 text = {Text("Novo")},
                 icon = {Icon(Icons.Default.Add,contentDescription = "New")},
-                onClick = {navController.navigate(Create)}
+                onClick = {
+                    navController.navigate(Create)}
             )
         }
     }

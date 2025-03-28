@@ -1,15 +1,20 @@
 package mayckgomes.com.planapp.viewmodels
 
+import android.content.Context
+import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.map
 import mayckgomes.com.planapp.database.Day
+import mayckgomes.com.planapp.database.GetDB
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-class CreateViewmodel: ViewModel(){
+class CreateViewmodel(): ViewModel(){
 
     val monthList = listOf(
         "Selecione",
@@ -48,8 +53,7 @@ class CreateViewmodel: ViewModel(){
     }
 
     private val _day = MutableStateFlow(0)
-    val dayNumber = _day.asStateFlow()
-
+    val day = _day.asStateFlow()
 
     fun nextDay(){
         _day.value++
@@ -98,15 +102,47 @@ class CreateViewmodel: ViewModel(){
     }
 
 
-    private val _daysSaved = MutableStateFlow<MutableList<Day>>(mutableListOf())
+    private val _daysSaved = MutableStateFlow<List<Day>>(emptyList())
     val daysSaved = _daysSaved.asStateFlow()
 
-    fun addDay(day: String, text: String){
-        _daysSaved.value.add(Day(day = day, text = text))
+    fun addDay(day: Day){
+        _daysSaved.value = _daysSaved.value + day
+        print(_daysSaved)
     }
 
     fun delDay(day: Day){
-        _daysSaved.value.removeAt(_daysSaved.value.indexOf(day))
+        _daysSaved.value = _daysSaved.value + day
     }
+
+    private val _isClick = MutableStateFlow(true)
+    val isClick = _isClick.asStateFlow()
+
+    @Composable
+    fun Save(context: Context, list: List<Day>){
+
+        val db = GetDB(context)
+
+        LaunchedEffect(Unit) {
+
+            db.addDays(_daysSaved.value)
+
+        }
+
+    }
+
+    @Composable
+    fun Delete(context: Context){
+
+        val db = GetDB(context)
+
+        LaunchedEffect(Unit) {
+
+            db.clearDb()
+
+        }
+
+    }
+
+
 
 }

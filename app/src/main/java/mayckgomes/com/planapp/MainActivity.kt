@@ -11,8 +11,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.serialization.Serializable
 import mayckgomes.com.planapp.ui.screens.CreateScreen
 import mayckgomes.com.planapp.ui.screens.HomeScreen
+import mayckgomes.com.planapp.ui.screens.ViewScreen
 import mayckgomes.com.planapp.ui.theme.PlanAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,6 +32,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PlanAppTheme {
+
+                WindowInsetsControllerCompat(window, LocalView.current).isAppearanceLightStatusBars = true
 
                 Navigation()
 
@@ -63,6 +69,10 @@ fun Navigation(){
 
             composable<Create>{
                 CreateScreen(navControler)
+            }
+
+            composable<View> {
+                ViewScreen(navControler)
             }
 
         }

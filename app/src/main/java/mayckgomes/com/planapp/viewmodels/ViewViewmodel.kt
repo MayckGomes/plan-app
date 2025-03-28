@@ -1,6 +1,11 @@
 package mayckgomes.com.planapp.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import mayckgomes.com.planapp.database.Day
+import mayckgomes.com.planapp.database.GetDB
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -10,8 +15,17 @@ class ViewViewmodel(): ViewModel() {
         return "usuario"
     }
 
+    private val _list = MutableStateFlow(emptyList<Day>())
+    val list = _list.asStateFlow()
 
-    suspend fun GetAllDates(): List<String>{
-        return emptyList<String>()
+    suspend fun GetAllDates(context: Context){
+
+        val db = GetDB(context)
+
+        _list.value = emptyList<Day>()
+
+        _list.value += db.getAll()
     }
+
+
 }

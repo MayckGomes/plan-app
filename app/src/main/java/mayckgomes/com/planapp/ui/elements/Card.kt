@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,7 +33,7 @@ fun CardPlan(
 
     Box(
         modifier = Modifier
-            .width(272.dp)
+            .fillMaxWidth(1f)
             .height(68.dp)
             .clip(RoundedCornerShape(8))
             .background(color = bgColor)
