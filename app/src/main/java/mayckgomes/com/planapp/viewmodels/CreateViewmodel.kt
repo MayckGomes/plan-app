@@ -1,14 +1,21 @@
 package mayckgomes.com.planapp.viewmodels
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mayckgomes.com.planapp.database.Day
 import mayckgomes.com.planapp.database.GetDB
 import java.time.DayOfWeek
@@ -117,32 +124,23 @@ class CreateViewmodel(): ViewModel(){
     private val _isClick = MutableStateFlow(true)
     val isClick = _isClick.asStateFlow()
 
-    @Composable
-    fun Save(context: Context, list: List<Day>){
+    @SuppressLint("CoroutineCreationDuringComposition")
+    fun Save(context: Context) {
+        val scope = CoroutineScope(Dispatchers.IO)
 
-        val db = GetDB(context)
-
-        LaunchedEffect(Unit) {
-
-            db.addDays(_daysSaved.value)
-
+        scope.launch {
+            delete(context) // Executa a exclusão primeiro e espera concluir
+            val db = GetDB(context)
+            db.addDays(_daysSaved.value) // Depois adiciona os novos itens
         }
-
     }
 
-    @Composable
-    fun Delete(context: Context){
-
-        val db = GetDB(context)
-
-        LaunchedEffect(Unit) {
-
+    suspend fun delete(context: Context) {
+        withContext(Dispatchers.IO) { // Garante que roda na thread correta
+            val db = GetDB(context)
             db.clearDb()
-
         }
-
     }
-
 
 
 }

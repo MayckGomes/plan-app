@@ -83,7 +83,6 @@ fun ViewScreen(navController: NavController){
 
                 CardPlan(day.day, day.text, bgColor = Gray, dateColor = Black)
                 Spacer(Modifier.size(10.dp))
-
             }
 
         }

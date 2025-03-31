@@ -1,6 +1,7 @@
 package mayckgomes.com.planapp.ui.screens
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -55,6 +56,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import mayckgomes.com.planapp.database.Day
 import mayckgomes.com.planapp.ui.elements.CardPlan
+import mayckgomes.com.planapp.ui.elements.DialogApp
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
 import mayckgomes.com.planapp.ui.theme.Gray
@@ -91,10 +93,7 @@ fun CreateScreen(navController: NavController){
 
     var isClick by rememberSaveable { mutableStateOf(false) }
 
-    var keyboardActions = LocalSoftwareKeyboardController.current
-
-    viewmodel.Delete(context)
-
+    var isClickBack by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -298,7 +297,7 @@ fun CreateScreen(navController: NavController){
 
                                    viewmodel.addDay(day = Day(day = dayList[dayNumber], text = text))
                                    text = ""
-                                   viewmodel.nextDay()
+                                   if(isChoosed && dayNumber + 1 <= dayList.size - 1){ viewmodel.nextDay() }
 
                                }
                            }
@@ -345,23 +344,49 @@ fun CreateScreen(navController: NavController){
                    shape = RoundedCornerShape(12.dp),
                    onClick = {
                        isClick = true
-                       navController.popBackStack()
                    }
                ) {
-
-                   if (isClick){
-
-                       isClick = false
-                       viewmodel.Save(context, daySavedList)
-                       
-                   }
                    StyledText("Salvar")
-
                }
 
            }
 
        }
+
+        BackHandler {
+
+            isClickBack = true
+
+        }
+
+        if (isClickBack){
+
+
+
+            DialogApp(
+                title = "Atenção",
+                text = " Deseja voltar?, o conteúdo não será salvo!",
+                onDimiss = {isClickBack = false},
+                onConfirm = {navController.popBackStack()}
+            )
+
+        }
+
+        if (isClick){
+
+            DialogApp(
+                title = "Atenção",
+                text = " Deseja mesmo salvar?, o conteúdo salvo anteriormente será perdido!",
+                onDimiss = {isClick = false},
+                onConfirm = {
+                    viewmodel.Save(context)
+                    navController.popBackStack()
+                }
+            )
+
+
+
+        }
 
     }
 

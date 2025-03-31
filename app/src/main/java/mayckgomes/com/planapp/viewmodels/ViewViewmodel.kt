@@ -12,7 +12,7 @@ import java.time.LocalDate
 class ViewViewmodel(): ViewModel() {
 
     fun GetUserName(): String{
-        return "usuario"
+        return "Leide"
     }
 
     private val _list = MutableStateFlow(emptyList<Day>())
