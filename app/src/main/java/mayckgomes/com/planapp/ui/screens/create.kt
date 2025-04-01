@@ -274,6 +274,7 @@ fun CreateScreen(navController: NavController){
                                 .width(285.dp),
                             value = text,
                             onValueChange = {text = it},
+                            singleLine = true,
                             placeholder = {StyledText("Digite uma descrição...", color = Gray, fontSize = 12.sp)},
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(unfocusedTextColor = Black, focusedTextColor = Black),
