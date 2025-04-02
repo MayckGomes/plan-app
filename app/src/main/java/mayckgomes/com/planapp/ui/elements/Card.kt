@@ -33,7 +33,7 @@ fun CardPlan(
 
     Box(
         modifier = Modifier
-            .fillMaxWidth(1f)
+            .fillMaxWidth()
             .clip(RoundedCornerShape(8))
             .background(color = bgColor)
             .padding(9.dp,4.dp)

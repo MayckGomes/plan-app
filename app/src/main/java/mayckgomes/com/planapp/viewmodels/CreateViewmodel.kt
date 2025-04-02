@@ -70,6 +70,10 @@ class CreateViewmodel(): ViewModel(){
         _day.value--
     }
 
+    fun backAllDays(){
+        _day.value = 0
+    }
+
     private val _dayList = MutableStateFlow(emptyList<String>())
     val dayList = _dayList.asStateFlow()
 
@@ -82,17 +86,25 @@ class CreateViewmodel(): ViewModel(){
 
         var data = LocalDate.of(ano,mes,1)
 
-        while (data.dayOfMonth < data.lengthOfMonth()){
+        // verifica se o dia pertence ao mes pedido
+        while (data.monthValue == mes){
+
+            Log.d("day", data.lengthOfMonth().toString())
+            Log.d("day", data.dayOfMonth.toString())
 
             if (data.dayOfWeek == DayOfWeek.SUNDAY){
 
-                listaDias.add("${data.dayOfMonth}/$mes - Domingo")
+                listaDias.add("${
+                    if (data.dayOfMonth < 10)"0${data.dayOfMonth}" else data.dayOfMonth
+                }/$mes - Domingo")
 
                 data = data.plusDays(1)
 
             } else if (data.dayOfWeek == DayOfWeek.WEDNESDAY){
 
-                listaDias.add("${data.dayOfMonth}/$mes - Quarta")
+                listaDias.add("${
+                    if (data.dayOfMonth < 10)"0${data.dayOfMonth}" else data.dayOfMonth
+                }/$mes - Quarta")
 
                 data = data.plusDays(1)
 
@@ -104,21 +116,22 @@ class CreateViewmodel(): ViewModel(){
 
         }
 
+        Log.d("day", listaDias.toString())
         _dayList.value = listaDias
 
     }
 
 
     private val _daysSaved = MutableStateFlow<List<Day>>(emptyList())
-    val daysSaved = _daysSaved.asStateFlow()
+    val daysSaved = _daysSaved.asStateFlow() // <- como eu faço para sempre retornar a lista sort
 
     fun addDay(day: Day){
-        _daysSaved.value = _daysSaved.value + day
+        _daysSaved.value = (_daysSaved.value + day).sortedBy { it.day }
         print(_daysSaved)
     }
 
     fun delDay(day: Day){
-        _daysSaved.value = _daysSaved.value + day
+        _daysSaved.value = (_daysSaved.value - day).sortedBy { it.day }
     }
 
     private val _isClick = MutableStateFlow(true)

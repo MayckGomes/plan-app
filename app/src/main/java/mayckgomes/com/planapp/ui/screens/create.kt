@@ -26,6 +26,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -44,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -199,6 +202,7 @@ fun CreateScreen(navController: NavController){
                     loading = true
                     isChoosed = true
                     viewmodel.GetDaysOfMonth(monthNumber)
+                    viewmodel.backAllDays()
                     loading = false
                     
                 } else {
@@ -332,7 +336,17 @@ fun CreateScreen(navController: NavController){
                            .padding(10.dp)
                    ) {
                        items(daySavedList){ day ->
+
                            CardPlan(day.day,day.text)
+                           Button(
+                               modifier = Modifier.fillMaxWidth(),
+                               colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = White),
+                               onClick = {viewmodel.delDay(day)},
+                               shape = RoundedCornerShape(8.dp)
+                           ) {
+                               StyledText("Deletar")
+                           }
+
                            Spacer(Modifier.size(17.dp))
                        }
                    }
