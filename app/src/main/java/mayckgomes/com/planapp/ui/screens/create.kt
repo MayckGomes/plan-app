@@ -37,7 +37,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +47,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -70,11 +68,13 @@ import mayckgomes.com.planapp.viewmodels.CreateViewmodel
 @Composable
 fun CreateScreen(navController: NavController){
 
+    val context = LocalContext.current
+
     val viewmodel: CreateViewmodel = viewModel()
 
     val isExpanded by viewmodel.isExpanded.collectAsState()
 
-    val month by viewmodel.month.collectAsState(0)
+    val month by viewmodel.monthName.collectAsState(0)
 
     val monthNumber by viewmodel.monthNumber.collectAsState()
 
@@ -84,19 +84,17 @@ fun CreateScreen(navController: NavController){
 
     val daySavedList by viewmodel.daysSaved.collectAsState()
 
+    val loading by viewmodel.isLoading.collectAsState()
+
+    val isChoosed by viewmodel.isChoosed.collectAsState()
+
+    val isClick by viewmodel.isClick.collectAsState()
+
+    val isClickBack by viewmodel.isClickBack.collectAsState()
+
     var text by rememberSaveable {
         mutableStateOf("")
     }
-
-    val context = LocalContext.current
-
-    var loading by rememberSaveable { mutableStateOf(false) }
-
-    var isChoosed by rememberSaveable { mutableStateOf(false) }
-
-    var isClick by rememberSaveable { mutableStateOf(false) }
-
-    var isClickBack by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -199,11 +197,11 @@ fun CreateScreen(navController: NavController){
 
                 if (monthNumber != 0){
 
-                    loading = true
-                    isChoosed = true
+                    viewmodel.isLoadingTrue()
+                    viewmodel.isChoosedTrue()
                     viewmodel.GetDaysOfMonth(monthNumber)
                     viewmodel.backAllDays()
-                    loading = false
+                    viewmodel.isLoadingFalse()
                     
                 } else {
                     Toast.makeText(context,"Não é possivel selecionar essa opção", Toast.LENGTH_LONG).show()
@@ -245,7 +243,7 @@ fun CreateScreen(navController: NavController){
                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "back date")
                        }
 
-                       if(!isChoosed){
+                       if(isChoosed == false){
                            Text("Selecione um Mês")
                        } else {
                           Text(dayList[dayNumber])
@@ -359,7 +357,7 @@ fun CreateScreen(navController: NavController){
                    modifier = Modifier.fillMaxWidth(),
                    shape = RoundedCornerShape(12.dp),
                    onClick = {
-                       isClick = true
+                       viewmodel.isClickTrue()
                    }
                ) {
                    StyledText("Salvar")
@@ -371,7 +369,7 @@ fun CreateScreen(navController: NavController){
 
         BackHandler {
 
-            isClickBack = true
+            viewmodel.isClickBackTrue()
 
         }
 
@@ -382,7 +380,7 @@ fun CreateScreen(navController: NavController){
             DialogApp(
                 title = "Atenção",
                 text = " Deseja voltar?, o conteúdo não será salvo!",
-                onDimiss = {isClickBack = false},
+                onDimiss = {viewmodel.isClickBackFalse()},
                 onConfirm = {navController.popBackStack()}
             )
 
@@ -393,7 +391,7 @@ fun CreateScreen(navController: NavController){
             DialogApp(
                 title = "Atenção",
                 text = " Deseja mesmo salvar?, o conteúdo salvo anteriormente será perdido!",
-                onDimiss = {isClick = false},
+                onDimiss = {viewmodel.isClickFalse()},
                 onConfirm = {
                     viewmodel.Save(context)
                     navController.popBackStack()

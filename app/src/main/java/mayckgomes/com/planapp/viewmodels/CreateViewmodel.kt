@@ -3,14 +3,9 @@ package mayckgomes.com.planapp.viewmodels
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -23,6 +18,9 @@ import java.time.LocalDate
 
 class CreateViewmodel(): ViewModel(){
 
+
+
+    // months ======================================================================================
     val monthList = listOf(
         "Selecione",
         "Janeiro",
@@ -40,7 +38,7 @@ class CreateViewmodel(): ViewModel(){
         )
 
     private val _month = MutableStateFlow(0)
-    val month = _month.map{ monthList[_month.value] }
+    val monthName = _month.map{ monthList[_month.value] }
     val monthNumber = _month.asStateFlow()
 
     fun changeMonth(month: Int){
@@ -48,6 +46,8 @@ class CreateViewmodel(): ViewModel(){
     }
 
 
+
+    // menu ========================================================================================
     private val _isExpanded = MutableStateFlow(false)
     val isExpanded = _isExpanded.asStateFlow()
 
@@ -59,6 +59,9 @@ class CreateViewmodel(): ViewModel(){
         _isExpanded.value = false
     }
 
+
+
+    // days ========================================================================================
     private val _day = MutableStateFlow(0)
     val day = _day.asStateFlow()
 
@@ -74,6 +77,9 @@ class CreateViewmodel(): ViewModel(){
         _day.value = 0
     }
 
+
+
+    // days by month ===============================================================================
     private val _dayList = MutableStateFlow(emptyList<String>())
     val dayList = _dayList.asStateFlow()
 
@@ -122,8 +128,10 @@ class CreateViewmodel(): ViewModel(){
     }
 
 
+
+    // days by user ================================================================================
     private val _daysSaved = MutableStateFlow<List<Day>>(emptyList())
-    val daysSaved = _daysSaved.asStateFlow() // <- como eu faço para sempre retornar a lista sort
+    val daysSaved = _daysSaved.asStateFlow()
 
     fun addDay(day: Day){
         _daysSaved.value = (_daysSaved.value + day).sortedBy { it.day }
@@ -134,9 +142,9 @@ class CreateViewmodel(): ViewModel(){
         _daysSaved.value = (_daysSaved.value - day).sortedBy { it.day }
     }
 
-    private val _isClick = MutableStateFlow(true)
-    val isClick = _isClick.asStateFlow()
 
+
+    // Database funcs ==============================================================================
     @SuppressLint("CoroutineCreationDuringComposition")
     fun Save(context: Context) {
         val scope = CoroutineScope(Dispatchers.IO)
@@ -156,4 +164,55 @@ class CreateViewmodel(): ViewModel(){
     }
 
 
+    // vars ========================================================================================
+
+    private val _isClick = MutableStateFlow(false)
+    val isClick = _isClick.asStateFlow()
+
+    fun isClickTrue(){
+        _isClick.value = true
+    }
+
+    fun isClickFalse(){
+        _isClick.value = false
+    }
+
+
+
+    private val _isClickBack = MutableStateFlow(false)
+    val isClickBack = _isClickBack.asStateFlow()
+
+    fun isClickBackTrue(){
+        _isClickBack.value = true
+    }
+
+    fun isClickBackFalse(){
+        _isClickBack.value = false
+    }
+
+
+
+    private val _isChoosed = MutableStateFlow(false)
+    val isChoosed = _isChoosed.asStateFlow()
+
+    fun isChoosedTrue(){
+        _isChoosed.value = true
+    }
+
+    fun isChoosedFalse(){
+        _isChoosed.value = false
+    }
+
+
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    fun isLoadingTrue(){
+        _isLoading.value = true
+    }
+
+    fun isLoadingFalse(){
+        _isLoading.value = false
+    }
 }

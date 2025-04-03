@@ -44,19 +44,17 @@ import androidx.navigation.compose.rememberNavController
 import mayckgomes.com.planapp.Create
 import mayckgomes.com.planapp.R
 import mayckgomes.com.planapp.View
-import mayckgomes.com.planapp.database.Day
 import mayckgomes.com.planapp.ui.elements.CardPlan
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
 import mayckgomes.com.planapp.ui.theme.Gray
 import mayckgomes.com.planapp.ui.theme.White
-import mayckgomes.com.planapp.viewmodels.CreateViewmodel
-import mayckgomes.com.planapp.viewmodels.ViewViewmodel
+import mayckgomes.com.planapp.viewmodels.ShowViewmodel
 
 @Composable
 fun HomeScreen(navController: NavController){
 
-    val viewmodel: ViewViewmodel = viewModel()
+    val viewmodel: ShowViewmodel = viewModel()
     
     val userName = viewmodel.GetUserName()
 

@@ -37,12 +37,12 @@ import mayckgomes.com.planapp.ui.elements.CardPlan
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
 import mayckgomes.com.planapp.ui.theme.Gray
-import mayckgomes.com.planapp.viewmodels.ViewViewmodel
+import mayckgomes.com.planapp.viewmodels.ShowViewmodel
 
 @Composable
 fun ViewScreen(navController: NavController){
 
-    val viewmodel: ViewViewmodel = viewModel()
+    val viewmodel: ShowViewmodel = viewModel()
 
     val dateList by viewmodel.list.collectAsState()
 

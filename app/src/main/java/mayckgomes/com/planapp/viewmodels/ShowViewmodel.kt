@@ -6,10 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import mayckgomes.com.planapp.database.Day
 import mayckgomes.com.planapp.database.GetDB
-import java.time.DayOfWeek
-import java.time.LocalDate
 
-class ViewViewmodel(): ViewModel() {
+class ShowViewmodel(): ViewModel() {
 
     fun GetUserName(): String{
         return "Leide"
