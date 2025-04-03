@@ -56,7 +56,7 @@ fun HomeScreen(navController: NavController){
 
     val viewmodel: ShowViewmodel = viewModel()
     
-    val userName = viewmodel.GetUserName()
+    val userName by viewmodel.userName.collectAsState()
 
     val dateList by viewmodel.list.collectAsState()
 
@@ -67,7 +67,7 @@ fun HomeScreen(navController: NavController){
     }
 
     LaunchedEffect(Unit) {
-
+        viewmodel.GetUserName(context)
         viewmodel.GetAllDates(context)
         isLoading = false
     }
