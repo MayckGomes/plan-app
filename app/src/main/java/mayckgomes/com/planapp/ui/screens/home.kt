@@ -1,7 +1,10 @@
 package mayckgomes.com.planapp.ui.screens
 
+import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,20 +48,25 @@ import mayckgomes.com.planapp.Create
 import mayckgomes.com.planapp.R
 import mayckgomes.com.planapp.View
 import mayckgomes.com.planapp.ui.elements.CardPlan
+import mayckgomes.com.planapp.ui.elements.InputDialogApp
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
 import mayckgomes.com.planapp.ui.theme.Gray
 import mayckgomes.com.planapp.ui.theme.White
 import mayckgomes.com.planapp.viewmodels.ShowViewmodel
+import mayckgomes.com.planapp.viewmodels.UserViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(navController: NavController){
 
-    val viewmodel: ShowViewmodel = viewModel()
-    
-    val userName by viewmodel.userName.collectAsState()
+    val showViewmodel: ShowViewmodel = viewModel()
 
-    val dateList by viewmodel.list.collectAsState()
+    val userViewmodel: UserViewModel = viewModel()
+
+    val userName by userViewmodel.userName.collectAsState()
+
+    val dateList by showViewmodel.list.collectAsState()
 
     val context = LocalContext.current
 
@@ -66,9 +74,18 @@ fun HomeScreen(navController: NavController){
         mutableStateOf(true)
     }
 
+    var isFirstTime by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(Unit) {
-        viewmodel.GetUserName(context)
-        viewmodel.GetAllDates(context)
+        if (userViewmodel.VerifyFirstTime(context)){
+
+            isFirstTime = true
+
+        }
+        userViewmodel.GetUserName(context)
+        showViewmodel.GetAllDates(context)
         isLoading = false
     }
 
@@ -84,6 +101,13 @@ fun HomeScreen(navController: NavController){
 
             StyledText("Olá, $userName!",
                 fontSize = 24.sp,
+                modifier = Modifier
+                    .combinedClickable(
+                        onClick = {},
+                        onLongClick = {
+                            Toast.makeText(context, "teste", Toast.LENGTH_SHORT).show()
+                        }
+                    )
             )
 
             Spacer(Modifier.size(51.dp))
@@ -188,6 +212,16 @@ fun HomeScreen(navController: NavController){
                     navController.navigate(Create)}
             )
         }
+
+
+        if (isFirstTime){
+
+            InputDialogApp(onClick = {isFirstTime = false})
+
+            userViewmodel.SetFalseFirstTime(context)
+
+        }
+
     }
 }
 

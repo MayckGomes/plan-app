@@ -83,8 +83,7 @@ class CreateViewmodel(): ViewModel(){
     private val _dayList = MutableStateFlow(emptyList<String>())
     val dayList = _dayList.asStateFlow()
 
-
-    fun GetDaysOfMonth(mes: Int){
+    suspend fun GetDaysOfMonth(mes: Int){
 
         val ano = LocalDate.now().year
 

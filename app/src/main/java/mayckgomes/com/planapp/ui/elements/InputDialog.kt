@@ -1,61 +1,56 @@
 package mayckgomes.com.planapp.ui.elements
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.room.util.TableInfo
-import androidx.sqlite.db.SupportSQLiteOpenHelper
+import androidx.lifecycle.viewmodel.compose.viewModel
 import mayckgomes.com.planapp.ui.theme.Black
+import mayckgomes.com.planapp.ui.theme.Gray
 import mayckgomes.com.planapp.ui.theme.White
+import mayckgomes.com.planapp.viewmodels.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DialogApp(
-    title: String,
-    text: String,
-    onDimiss: () -> Unit,
-    onConfirm: @Composable () -> Unit
+fun InputDialogApp(
+    onClick: () -> Unit
 ){
 
-    var isClick by rememberSaveable {
-        mutableStateOf(false)
-    }
+    val viewmodel: UserViewModel = viewModel()
+
+    val context = LocalContext.current
+
+    var textinput by rememberSaveable { mutableStateOf("") }
 
     BasicAlertDialog(
 
-        onDismissRequest = { onDimiss() },
+        onDismissRequest = {},
         content = {
 
             Card(
@@ -68,37 +63,39 @@ fun DialogApp(
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier
                         .fillMaxSize(1f)
-                        .padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 10.dp)
+                        .padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
                 ) {
 
-                    Icon(Icons.Default.Warning, contentDescription = null, tint = Black)
+                    StyledText("Seja Bem-Vindo!", fontSize = 20.sp)
 
                     Spacer(Modifier.size(20.dp))
 
-                    StyledText(title, fontSize = 20.sp)
+                    StyledText("Estamos muito feliz por usar este app para seu dia a dia!\n\nPrimeiro, Qual seu nome?", fontWeight = FontWeight.Normal)
 
+                    Spacer(Modifier.size(10.dp))
+
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .width(285.dp),
+                        value = textinput,
+                        onValueChange = {textinput = it},
+                        singleLine = true,
+                        placeholder = {StyledText("Digite uma descrição...", color = Gray, fontSize = 12.sp)},
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(unfocusedTextColor = Black, focusedTextColor = Black),
+                    )
+                    
                     Spacer(Modifier.size(20.dp))
 
-                    StyledText(text, fontWeight = FontWeight.Normal)
-
-                    Spacer(Modifier.size(20.dp))
-
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth(1f)
+                    OutlinedButton(
+                        modifier = Modifier.width(130.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = White, contentColor = Black),
+                        onClick = {
+                            viewmodel.changeUserName(textinput, context)
+                            onClick()
+                        }
                     ) {
-
-                        Button(
-                            colors = ButtonDefaults.buttonColors(containerColor = Black, contentColor = White),
-                            onClick = {onDimiss()}) {
-                            Text("Não")
-                        }
-
-                        OutlinedButton(
-                            colors = ButtonDefaults.buttonColors(containerColor = White, contentColor = Black),
-                            onClick = {isClick = true}) {
-                            Text("Sim")
-                        }
+                        Text("Confirmar")
                     }
                 }
             }
@@ -106,22 +103,10 @@ fun DialogApp(
         }
     )
 
-    if (isClick){
-
-        isClick = false
-
-        onConfirm()
-    }
-
 }
 
 @Preview
 @Composable
-fun dialogPreview(){
-    DialogApp(
-    title = "Atenção",
-    text = " Deseja mesmo salvar?, o conteúdo salvo anteriormente será perdido!",
-    onDimiss = {},
-    onConfirm = {}
-    )
+fun InputDialogPreview(){
+    InputDialogApp(onClick = {})
 }

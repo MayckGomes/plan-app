@@ -28,6 +28,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -40,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,9 +57,10 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import mayckgomes.com.planapp.database.Day
 import mayckgomes.com.planapp.ui.elements.CardPlan
-import mayckgomes.com.planapp.ui.elements.DialogApp
+import mayckgomes.com.planapp.ui.elements.AlertDialogApp
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
 import mayckgomes.com.planapp.ui.theme.Gray
@@ -69,6 +72,8 @@ import mayckgomes.com.planapp.viewmodels.CreateViewmodel
 fun CreateScreen(navController: NavController){
 
     val context = LocalContext.current
+
+    val scope = rememberCoroutineScope()
 
     val viewmodel: CreateViewmodel = viewModel()
 
@@ -84,7 +89,7 @@ fun CreateScreen(navController: NavController){
 
     val daySavedList by viewmodel.daysSaved.collectAsState()
 
-    val loading by viewmodel.isLoading.collectAsState()
+    val isLoading by viewmodel.isLoading.collectAsState()
 
     val isChoosed by viewmodel.isChoosed.collectAsState()
 
@@ -197,11 +202,13 @@ fun CreateScreen(navController: NavController){
 
                 if (monthNumber != 0){
 
-                    viewmodel.isLoadingTrue()
-                    viewmodel.isChoosedTrue()
-                    viewmodel.GetDaysOfMonth(monthNumber)
-                    viewmodel.backAllDays()
-                    viewmodel.isLoadingFalse()
+                    scope.launch{
+                        viewmodel.isLoadingTrue()
+                        viewmodel.isChoosedTrue()
+                        viewmodel.GetDaysOfMonth(monthNumber)
+                        viewmodel.backAllDays()
+                        viewmodel.isLoadingFalse()
+                    }
                     
                 } else {
                     Toast.makeText(context,"Não é possivel selecionar essa opção", Toast.LENGTH_LONG).show()
@@ -216,154 +223,167 @@ fun CreateScreen(navController: NavController){
 
         Box(modifier = Modifier.fillMaxSize(1f)){
 
-           Column(
-               modifier = Modifier.fillMaxSize(1f)
-           ) {
+            if (isLoading){
 
-               Box(
-                   modifier = Modifier
-                       .width(351.dp)
-                       .height(39.dp)
-                       .clip(RoundedCornerShape(25.dp))
-                       .background(color = Gray)
-               ){
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                }
 
-                   Row(
-                       verticalAlignment = Alignment.CenterVertically,
-                       horizontalArrangement = Arrangement.SpaceBetween,
-                       modifier = Modifier
-                           .fillMaxSize(1f)
-                   ){
+            } else {
 
-                       IconButton(
-                           onClick = {
-                               if(isChoosed && dayNumber != 0){ viewmodel.backDay() }
-                           }
-                       ) {
-                           Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "back date")
-                       }
+                Column(
+                    modifier = Modifier.fillMaxSize(1f)
+                ) {
 
-                       if(isChoosed == false){
-                           Text("Selecione um Mês")
-                       } else {
-                          Text(dayList[dayNumber])
-                       }
+                    Box(
+                        modifier = Modifier
+                            .width(351.dp)
+                            .height(39.dp)
+                            .clip(RoundedCornerShape(25.dp))
+                            .background(color = Gray)
+                    ){
 
-                       IconButton(
-                           onClick = {
-                               if(isChoosed && dayNumber + 1 <= dayList.size - 1){ viewmodel.nextDay() }
-
-                           }
-                       ) {
-                           Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "next date")
-                       }
-                   }
-
-               }
-
-               Spacer(Modifier.size(33.dp))
-
-               Box(){
-
-                   Column(modifier = Modifier
-                       .fillMaxWidth()
-                       .padding(horizontal = 43.dp)) {
-
-                        StyledText("Descrição", fontWeight = FontWeight.Normal)
-
-
-                        OutlinedTextField(
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
-                                .width(285.dp),
-                            value = text,
-                            onValueChange = {text = it},
-                            singleLine = true,
-                            placeholder = {StyledText("Digite uma descrição...", color = Gray, fontSize = 12.sp)},
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(unfocusedTextColor = Black, focusedTextColor = Black),
-                        )
+                                .fillMaxSize(1f)
+                        ){
 
-                       Spacer(Modifier.size(17.dp))
+                            IconButton(
+                                onClick = {
+                                    if(isChoosed && dayNumber != 0){ viewmodel.backDay() }
+                                }
+                            ) {
+                                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "back date")
+                            }
 
-                       OutlinedButton(
-                           modifier = Modifier.fillMaxWidth(),
-                           shape = RoundedCornerShape(12.dp),
-                           onClick = {
-                               if (monthNumber == 0){
+                            if(isChoosed == false){
+                                Text("Selecione um Mês")
+                            } else {
+                                Text(dayList[dayNumber])
+                            }
 
-                                   Toast.makeText(context,"Selecione um mês!!", Toast.LENGTH_LONG).show()
+                            IconButton(
+                                onClick = {
+                                    if(isChoosed && dayNumber + 1 <= dayList.size - 1){ viewmodel.nextDay() }
 
-                               } else if(text.isEmpty()){
+                                }
+                            ) {
+                                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "next date")
+                            }
+                        }
 
-                                   Toast.makeText(context,"Digite uma descrição primeiro!", Toast.LENGTH_LONG).show()
+                    }
 
-                               } else {
+                    Spacer(Modifier.size(33.dp))
 
-                                   viewmodel.addDay(day = Day(day = dayList[dayNumber], text = text))
-                                   text = ""
-                                   if(isChoosed && dayNumber + 1 <= dayList.size - 1){ viewmodel.nextDay() }
+                    Box(){
 
-                               }
-                           }
-                       ) {
-                           StyledText("Salvar")
-                       }
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 43.dp)) {
 
-                   }
+                            StyledText("Descrição", fontWeight = FontWeight.Normal)
 
-               }
 
-               Spacer(Modifier.size(52.dp))
+                            OutlinedTextField(
+                                modifier = Modifier
+                                    .width(285.dp),
+                                value = text,
+                                onValueChange = {text = it},
+                                singleLine = true,
+                                placeholder = {StyledText("Digite uma descrição...", color = Gray, fontSize = 12.sp)},
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(unfocusedTextColor = Black, focusedTextColor = Black),
+                            )
 
-               StyledText("Dias Salvos", fontSize = 24.sp)
+                            Spacer(Modifier.size(17.dp))
 
-               Spacer(Modifier.size(18.dp))
+                            OutlinedButton(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                onClick = {
+                                    if (monthNumber == 0){
 
-               Box(
-                   modifier = Modifier
-                       .fillMaxWidth()
-                       .height(500.dp)
-                       .clip(RoundedCornerShape(12.dp))
-                       .background(color = Gray)
-               ){
+                                        Toast.makeText(context,"Selecione um mês!!", Toast.LENGTH_LONG).show()
 
-                   LazyColumn(
-                       horizontalAlignment = Alignment.CenterHorizontally,
-                       modifier = Modifier
-                           .fillMaxSize()
-                           .padding(10.dp)
-                   ) {
-                       items(daySavedList){ day ->
+                                    } else if(text.isEmpty()){
 
-                           CardPlan(day.day,day.text)
-                           Button(
-                               modifier = Modifier.fillMaxWidth(),
-                               colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = White),
-                               onClick = {viewmodel.delDay(day)},
-                               shape = RoundedCornerShape(8.dp)
-                           ) {
-                               StyledText("Deletar")
-                           }
+                                        Toast.makeText(context,"Digite uma descrição primeiro!", Toast.LENGTH_LONG).show()
 
-                           Spacer(Modifier.size(17.dp))
-                       }
-                   }
+                                    } else {
 
-               }
+                                        viewmodel.addDay(day = Day(day = dayList[dayNumber], text = text))
+                                        text = ""
+                                        if(isChoosed && dayNumber + 1 <= dayList.size - 1){ viewmodel.nextDay() }
 
-               Spacer(Modifier.size(20.dp))
+                                    }
+                                }
+                            ) {
+                                StyledText("Salvar")
+                            }
 
-               OutlinedButton(
-                   modifier = Modifier.fillMaxWidth(),
-                   shape = RoundedCornerShape(12.dp),
-                   onClick = {
-                       viewmodel.isClickTrue()
-                   }
-               ) {
-                   StyledText("Salvar")
-               }
+                        }
 
-           }
+                    }
+
+                    Spacer(Modifier.size(52.dp))
+
+                    StyledText("Dias Salvos", fontSize = 24.sp)
+
+                    Spacer(Modifier.size(18.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(500.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(color = Gray)
+                    ){
+
+                        LazyColumn(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(10.dp)
+                        ) {
+                            items(daySavedList){ day ->
+
+                                CardPlan(day.day,day.text)
+                                Button(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = White),
+                                    onClick = {viewmodel.delDay(day)},
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    StyledText("Deletar")
+                                }
+
+                                Spacer(Modifier.size(17.dp))
+                            }
+                        }
+
+                    }
+
+                    Spacer(Modifier.size(20.dp))
+
+                    OutlinedButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        onClick = {
+                            viewmodel.isClickTrue()
+                        }
+                    ) {
+                        StyledText("Salvar")
+                    }
+
+                }
+
+            }
 
        }
 
@@ -377,7 +397,7 @@ fun CreateScreen(navController: NavController){
 
 
 
-            DialogApp(
+            AlertDialogApp(
                 title = "Atenção",
                 text = " Deseja voltar?, o conteúdo não será salvo!",
                 onDimiss = {viewmodel.isClickBackFalse()},
@@ -388,7 +408,7 @@ fun CreateScreen(navController: NavController){
 
         if (isClick){
 
-            DialogApp(
+            AlertDialogApp(
                 title = "Atenção",
                 text = " Deseja mesmo salvar?, o conteúdo salvo anteriormente será perdido!",
                 onDimiss = {viewmodel.isClickFalse()},
