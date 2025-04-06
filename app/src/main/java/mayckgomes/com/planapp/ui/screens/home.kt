@@ -50,6 +50,7 @@ import mayckgomes.com.planapp.View
 import mayckgomes.com.planapp.ui.elements.CardPlan
 import mayckgomes.com.planapp.ui.elements.InputDialogApp
 import mayckgomes.com.planapp.ui.elements.StyledText
+import mayckgomes.com.planapp.ui.elements.UpdateNameDialogApp
 import mayckgomes.com.planapp.ui.theme.Black
 import mayckgomes.com.planapp.ui.theme.Gray
 import mayckgomes.com.planapp.ui.theme.White
@@ -78,6 +79,10 @@ fun HomeScreen(navController: NavController){
         mutableStateOf(false)
     }
 
+    var isChangeName by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(Unit) {
         if (userViewmodel.VerifyFirstTime(context)){
 
@@ -103,9 +108,11 @@ fun HomeScreen(navController: NavController){
                 fontSize = 24.sp,
                 modifier = Modifier
                     .combinedClickable(
-                        onClick = {},
+                        onClick = {
+                            Toast.makeText(context, "Pressione e segure para mudar o nome!", Toast.LENGTH_LONG).show()
+                        },
                         onLongClick = {
-                            Toast.makeText(context, "teste", Toast.LENGTH_SHORT).show()
+                            isChangeName = true
                         }
                     )
             )
@@ -179,16 +186,31 @@ fun HomeScreen(navController: NavController){
 
                     } else {
 
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(top = 15.dp)
-                        ) {
+                        if (dateList.isEmpty()){
 
-                            items(dateList){ day ->
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            ) {
+                                StyledText("Ainda não há datas Salvas!\nToque em Novo e salve agora!", color = Black)
+                            }
 
-                                CardPlan(day.day,day.text)
-                                Spacer(Modifier.size(10.dp))
+                        } else {
+
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(top = 15.dp)
+                            ) {
+
+                                items(dateList){ day ->
+
+                                    CardPlan(day.day,day.text)
+                                    Spacer(Modifier.size(10.dp))
+                                }
+
                             }
 
                         }
@@ -219,6 +241,16 @@ fun HomeScreen(navController: NavController){
             InputDialogApp(onClick = {isFirstTime = false})
 
             userViewmodel.SetFalseFirstTime(context)
+
+        }
+        if (isChangeName){
+
+            UpdateNameDialogApp(
+                onClick = {
+                    isChangeName = false
+                    Toast.makeText(context, "Nome trocado com sucesso!", Toast.LENGTH_SHORT).show()
+                }
+            )
 
         }
 

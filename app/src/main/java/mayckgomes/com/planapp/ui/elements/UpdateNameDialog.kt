@@ -38,7 +38,7 @@ import mayckgomes.com.planapp.viewmodels.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputDialogApp(
+fun UpdateNameDialogApp(
     onClick: () -> Unit
 ){
 
@@ -66,13 +66,17 @@ fun InputDialogApp(
                         .padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
                 ) {
 
-                    StyledText("Seja Bem-Vindo!", fontSize = 20.sp)
+                    StyledText("Digite seu novo nome!", fontSize = 20.sp)
 
                     Spacer(Modifier.size(20.dp))
 
-                    StyledText("Estamos muito feliz por usar este app para seu dia a dia!\n\nPrimeiro, Qual seu nome?", fontWeight = FontWeight.Normal)
+                    StyledText(
+                        text = "Nome",
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier
+                            .align(Alignment.Start))
 
-                    Spacer(Modifier.size(10.dp))
+                    Spacer(Modifier.size(5.dp))
 
                     OutlinedTextField(
                         modifier = Modifier
@@ -80,7 +84,7 @@ fun InputDialogApp(
                         value = textinput,
                         onValueChange = {textinput = it},
                         singleLine = true,
-                        placeholder = {StyledText("Digite uma descrição...", color = Gray, fontSize = 12.sp)},
+                        placeholder = {StyledText("Digite seu novo nome...", color = Gray, fontSize = 12.sp)},
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(unfocusedTextColor = Black, focusedTextColor = Black),
                     )
@@ -107,6 +111,6 @@ fun InputDialogApp(
 
 @Preview
 @Composable
-fun InputDialogPreview(){
-    InputDialogApp(onClick = {})
+fun UpdateNameDialogAppPreview(){
+    UpdateNameDialogApp(onClick = {})
 }

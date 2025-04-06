@@ -92,7 +92,7 @@ fun AlertDialogApp(
 
                         OutlinedButton(
                             modifier = Modifier.width(130.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = White, contentColor = Black),
+                            colors = ButtonDefaults.outlinedButtonColors(containerColor = White, contentColor = Black),
                             onClick = {isClick = true}) {
                             Text("Sim")
                         }

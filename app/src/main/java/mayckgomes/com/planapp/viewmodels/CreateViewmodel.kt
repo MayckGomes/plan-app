@@ -83,7 +83,7 @@ class CreateViewmodel(): ViewModel(){
     private val _dayList = MutableStateFlow(emptyList<String>())
     val dayList = _dayList.asStateFlow()
 
-    suspend fun GetDaysOfMonth(mes: Int){
+    fun GetDaysOfMonth(mes: Int){
 
         val ano = LocalDate.now().year
 
@@ -127,18 +127,19 @@ class CreateViewmodel(): ViewModel(){
     }
 
 
-
     // days by user ================================================================================
     private val _daysSaved = MutableStateFlow<List<Day>>(emptyList())
     val daysSaved = _daysSaved.asStateFlow()
 
     fun addDay(day: Day){
         _daysSaved.value = (_daysSaved.value + day).sortedBy { it.day }
-        print(_daysSaved)
+        // adiciona o a data na lista de salvos e retira a data da lista de datas disponiveis
+        _dayList.value = (_dayList.value - day.day).sortedBy { it }
     }
 
     fun delDay(day: Day){
         _daysSaved.value = (_daysSaved.value - day).sortedBy { it.day }
+        _dayList.value = (_dayList.value + day.day).sortedBy { it }
     }
 
 
@@ -198,10 +199,6 @@ class CreateViewmodel(): ViewModel(){
         _isChoosed.value = true
     }
 
-    fun isChoosedFalse(){
-        _isChoosed.value = false
-    }
-
 
 
     private val _isLoading = MutableStateFlow(false)
@@ -213,5 +210,18 @@ class CreateViewmodel(): ViewModel(){
 
     fun isLoadingFalse(){
         _isLoading.value = false
+    }
+
+
+
+    private val _isFull = MutableStateFlow(false)
+    val isFull = _isFull.asStateFlow()
+
+    fun isFullTrue(){
+        _isFull.value = true
+    }
+
+    fun isFullFalse(){
+        _isFull.value = false
     }
 }

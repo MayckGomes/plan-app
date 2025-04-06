@@ -1,5 +1,6 @@
 package mayckgomes.com.planapp.ui.screens
 
+import android.R
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
@@ -63,6 +64,7 @@ import mayckgomes.com.planapp.ui.elements.CardPlan
 import mayckgomes.com.planapp.ui.elements.AlertDialogApp
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
+import mayckgomes.com.planapp.ui.theme.DarkGray
 import mayckgomes.com.planapp.ui.theme.Gray
 import mayckgomes.com.planapp.ui.theme.White
 import mayckgomes.com.planapp.viewmodels.CreateViewmodel
@@ -96,6 +98,8 @@ fun CreateScreen(navController: NavController){
     val isClick by viewmodel.isClick.collectAsState()
 
     val isClickBack by viewmodel.isClickBack.collectAsState()
+
+    val isFull by viewmodel.isFull.collectAsState()
 
     var text by rememberSaveable {
         mutableStateOf("")
@@ -240,7 +244,7 @@ fun CreateScreen(navController: NavController){
 
                     Box(
                         modifier = Modifier
-                            .width(351.dp)
+                            .fillMaxWidth(1f)
                             .height(39.dp)
                             .clip(RoundedCornerShape(25.dp))
                             .background(color = Gray)
@@ -262,9 +266,22 @@ fun CreateScreen(navController: NavController){
                             }
 
                             if(isChoosed == false){
+
                                 Text("Selecione um Mês")
+                                viewmodel.isFullTrue()
+
                             } else {
-                                Text(dayList[dayNumber])
+
+                                if (dayList.isEmpty()){
+
+                                    Text("Todas as datas foram selecionadas")
+                                    viewmodel.isFullTrue()
+
+                                } else {
+
+                                    Text(dayList[dayNumber])
+                                    viewmodel.isFullFalse()
+                                }
                             }
 
                             IconButton(
@@ -292,11 +309,11 @@ fun CreateScreen(navController: NavController){
 
                             OutlinedTextField(
                                 modifier = Modifier
-                                    .width(285.dp),
+                                    .fillMaxWidth(1f),
                                 value = text,
                                 onValueChange = {text = it},
                                 singleLine = true,
-                                placeholder = {StyledText("Digite uma descrição...", color = Gray, fontSize = 12.sp)},
+                                placeholder = {StyledText("Digite uma descrição...", color = DarkGray, fontSize = 12.sp)},
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(unfocusedTextColor = Black, focusedTextColor = Black),
                             )
@@ -306,20 +323,20 @@ fun CreateScreen(navController: NavController){
                             OutlinedButton(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
+                                enabled = !isFull,
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    disabledContentColor = DarkGray
+                                ),
                                 onClick = {
-                                    if (monthNumber == 0){
-
-                                        Toast.makeText(context,"Selecione um mês!!", Toast.LENGTH_LONG).show()
-
-                                    } else if(text.isEmpty()){
+                                    if(text.isEmpty()){
 
                                         Toast.makeText(context,"Digite uma descrição primeiro!", Toast.LENGTH_LONG).show()
 
                                     } else {
 
                                         viewmodel.addDay(day = Day(day = dayList[dayNumber], text = text))
+                                        viewmodel.backAllDays()
                                         text = ""
-                                        if(isChoosed && dayNumber + 1 <= dayList.size - 1){ viewmodel.nextDay() }
 
                                     }
                                 }
@@ -345,26 +362,41 @@ fun CreateScreen(navController: NavController){
                             .background(color = Gray)
                     ){
 
-                        LazyColumn(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(10.dp)
-                        ) {
-                            items(daySavedList){ day ->
+                        if (daySavedList.isEmpty()){
 
-                                CardPlan(day.day,day.text)
-                                Button(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = White),
-                                    onClick = {viewmodel.delDay(day)},
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    StyledText("Deletar")
-                                }
-
-                                Spacer(Modifier.size(17.dp))
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            ) {
+                                StyledText("Ainda não há datas Salvas!", color = Black)
                             }
+
+                        } else {
+
+                            LazyColumn(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(10.dp)
+                            ) {
+                                items(daySavedList){ day ->
+
+                                    CardPlan(day.day,day.text)
+                                    Button(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = White),
+                                        onClick = {viewmodel.delDay(day)},
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        StyledText("Deletar")
+                                    }
+
+                                    Spacer(Modifier.size(17.dp))
+                                }
+                            }
+
                         }
 
                     }
