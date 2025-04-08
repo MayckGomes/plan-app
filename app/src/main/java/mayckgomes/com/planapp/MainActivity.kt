@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.serialization.Serializable
 import mayckgomes.com.planapp.ui.screens.CreateScreen
+import mayckgomes.com.planapp.ui.screens.EditScreen
 import mayckgomes.com.planapp.ui.screens.HomeScreen
 import mayckgomes.com.planapp.ui.screens.ViewScreen
 import mayckgomes.com.planapp.ui.theme.PlanAppTheme
@@ -75,6 +76,9 @@ fun Navigation(){
                 ViewScreen(navControler)
             }
 
+            composable<Edit> {
+                EditScreen(navControler)
+            }
         }
 
         )

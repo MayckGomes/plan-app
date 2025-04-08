@@ -12,6 +12,7 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Entity
 data class Day(
@@ -28,13 +29,16 @@ interface DayInterface {
     suspend fun addDays(day: List<Day>)
 
     @Update
-    suspend fun upDay(day: Day)
+    suspend fun updateDays(day: List<Day>)
 
     @Query("DELETE FROM day")
     suspend fun clearDb()
 
     @Query("SELECT * FROM day")
-    suspend fun getAll(): List<Day>
+    fun getAll(): Flow<List<Day>>
+
+    @Query("SELECT * FROM day")
+    suspend fun getAllList(): List<Day>
 
 }
 

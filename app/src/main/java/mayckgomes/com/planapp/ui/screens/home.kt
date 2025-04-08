@@ -45,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import mayckgomes.com.planapp.Create
+import mayckgomes.com.planapp.Edit
 import mayckgomes.com.planapp.R
 import mayckgomes.com.planapp.View
 import mayckgomes.com.planapp.ui.elements.CardPlan
@@ -72,7 +73,7 @@ fun HomeScreen(navController: NavController){
     val context = LocalContext.current
 
     var isLoading by rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     var isFirstTime by rememberSaveable {
@@ -91,7 +92,6 @@ fun HomeScreen(navController: NavController){
         }
         userViewmodel.GetUserName(context)
         showViewmodel.GetAllDates(context)
-        isLoading = false
     }
 
     Scaffold {padding ->
@@ -157,7 +157,7 @@ fun HomeScreen(navController: NavController){
                         Spacer(Modifier.size(18.dp))
 
                         IconButton(
-                            onClick = {},
+                            onClick = {navController.navigate(Edit)},
                             modifier = Modifier
                                 .padding(0.dp)
                                 .size(24.dp)

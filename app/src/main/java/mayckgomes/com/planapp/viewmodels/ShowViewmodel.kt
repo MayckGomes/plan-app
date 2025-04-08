@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import mayckgomes.com.planapp.database.Day
 import mayckgomes.com.planapp.database.GetDB
 import androidx.core.content.edit
+import kotlinx.coroutines.flow.collectLatest
 
 class ShowViewmodel(): ViewModel() {
 
@@ -19,7 +20,9 @@ class ShowViewmodel(): ViewModel() {
 
         val db = GetDB(context)
 
-        _list.value += db.getAll()
+        db.getAll().collectLatest {
+            _list.value = it
+        }
     }
 
 }
