@@ -114,7 +114,7 @@ fun AlertDialogApp(
 
 @Preview
 @Composable
-fun dialogPreview(){
+fun DialogPreview(){
     AlertDialogApp(
     title = "Atenção",
     text = " Deseja mesmo salvar?, o conteúdo salvo anteriormente será perdido!",

@@ -1,6 +1,5 @@
 package mayckgomes.com.planapp.ui.screens
 
-import android.R
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
@@ -41,10 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -101,9 +97,7 @@ fun CreateScreen(navController: NavController){
 
     val isFull by viewmodel.isFull.collectAsState()
 
-    var text by rememberSaveable {
-        mutableStateOf("")
-    }
+    val text by viewmodel.text.collectAsState()
 
     Column(
         modifier = Modifier
@@ -311,7 +305,7 @@ fun CreateScreen(navController: NavController){
                                 modifier = Modifier
                                     .fillMaxWidth(1f),
                                 value = text,
-                                onValueChange = {text = it},
+                                onValueChange = {viewmodel.textUpdate(it)},
                                 singleLine = true,
                                 placeholder = {StyledText("Digite uma descrição...", color = DarkGray, fontSize = 12.sp)},
                                 shape = RoundedCornerShape(12.dp),
@@ -336,7 +330,7 @@ fun CreateScreen(navController: NavController){
 
                                         viewmodel.addDay(day = Day(day = dayList[dayNumber], text = text))
                                         viewmodel.backAllDays()
-                                        text = ""
+                                        viewmodel.textClear()
 
                                     }
                                 }

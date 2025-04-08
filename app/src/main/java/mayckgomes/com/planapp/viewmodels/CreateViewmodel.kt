@@ -224,4 +224,17 @@ class CreateViewmodel(): ViewModel(){
     fun isFullFalse(){
         _isFull.value = false
     }
+
+
+
+    private val _text = MutableStateFlow("")
+    val text = _text.asStateFlow()
+
+    fun textUpdate(text: String){
+        _text.value = text
+    }
+
+    fun textClear(){
+        _text.value = ""
+    }
 }
