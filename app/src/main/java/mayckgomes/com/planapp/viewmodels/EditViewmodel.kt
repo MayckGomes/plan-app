@@ -24,6 +24,8 @@ class EditViewmodel: ViewModel() {
         _text.value = ""
     }
 
+
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
@@ -37,6 +39,9 @@ class EditViewmodel: ViewModel() {
 
     }
 
+
+
+
     private val _isClickSave = MutableStateFlow(false)
     val isClickSave = _isClickSave.asStateFlow()
 
@@ -48,6 +53,8 @@ class EditViewmodel: ViewModel() {
         _isClickSave.value = false
     }
 
+
+
     private val _isClickBack = MutableStateFlow(false)
     val isClickBack = _isClickBack.asStateFlow()
 
@@ -57,6 +64,19 @@ class EditViewmodel: ViewModel() {
 
     fun isClickBackFalse(){
         _isClickBack.value = false
+    }
+
+
+
+    private val _isSelected = MutableStateFlow(false)
+    val isSelected = _isSelected.asStateFlow()
+
+    fun isSelectedTrue(){
+        _isSelected.value = true
+    }
+
+    fun isSelectedFalse(){
+        _isSelected.value = false
     }
 
     private val _dayList = MutableStateFlow<List<Day>>(emptyList())
@@ -107,6 +127,9 @@ class EditViewmodel: ViewModel() {
 
     }
 
+    fun backAllDays(){
+        _day.value = 0
+    }
 
     fun save(context: Context){
         val db = GetDB(context)

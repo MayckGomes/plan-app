@@ -81,6 +81,8 @@ fun EditScreen(navController: NavController) {
 
     val isClickBack by viewmodel.isClickBack.collectAsState()
 
+    val isSelected by viewmodel.isSelected.collectAsState()
+
     LaunchedEffect(Unit) {
         viewmodel.isLoadingTrue()
         viewmodel.getDays(context)
@@ -140,9 +142,12 @@ fun EditScreen(navController: NavController) {
 
                 if (editDayList.isEmpty()){
                     Text("Todos os dias foram selecionados")
+                    viewmodel.isSelectedFalse()
+
                 } else {
 
                     Text(editDayList[day].day)
+                    viewmodel.isSelectedTrue()
 
                 }
 
@@ -184,6 +189,7 @@ fun EditScreen(navController: NavController) {
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
+                    enabled = isSelected,
                     colors = ButtonDefaults.outlinedButtonColors(
                         disabledContentColor = DarkGray
                     ),
@@ -205,6 +211,7 @@ fun EditScreen(navController: NavController) {
                             )
 
                             viewmodel.textClear()
+                            viewmodel.backAllDays()
 
                         }
                     }
