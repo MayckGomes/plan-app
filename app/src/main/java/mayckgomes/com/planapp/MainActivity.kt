@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,7 +26,9 @@ import mayckgomes.com.planapp.ui.screens.CreateScreen
 import mayckgomes.com.planapp.ui.screens.EditScreen
 import mayckgomes.com.planapp.ui.screens.HomeScreen
 import mayckgomes.com.planapp.ui.screens.ViewScreen
+import mayckgomes.com.planapp.ui.screens.Welcome.WelcomeMain
 import mayckgomes.com.planapp.ui.theme.PlanAppTheme
+import mayckgomes.com.planapp.viewmodels.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +37,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             PlanAppTheme {
 
+                val viewmodel = viewModel<UserViewModel>()
+
                 WindowInsetsControllerCompat(window, LocalView.current).isAppearanceLightStatusBars = true
 
-                Navigation()
+                val isFirstTime = viewmodel.VerifyFirstTime(this)
+
+                Navigation(isFirstTime)
 
             }
         }
@@ -55,12 +62,27 @@ object Create
 @Serializable
 object Edit
 
+@Serializable
+object Register
+
 @Composable
-fun Navigation(){
+fun Navigation(isFirstTime : Boolean){
 
     val navControler = rememberNavController()
 
-    NavHost(navControler, startDestination = Home,
+    NavHost(navControler,
+        startDestination =
+
+            if(isFirstTime) {
+
+                Register
+
+            } else {
+
+                Home
+
+            },
+
         //enterTransition = {},
         builder = {
 
@@ -78,6 +100,10 @@ fun Navigation(){
 
             composable<Edit> {
                 EditScreen(navControler)
+            }
+
+            composable<Register>{
+                WelcomeMain(navControler)
             }
         }
 

@@ -203,7 +203,7 @@ fun CreateScreen(navController: NavController){
                     scope.launch{
                         viewmodel.isLoadingTrue()
                         viewmodel.isChoosedTrue()
-                        viewmodel.GetDaysOfMonth(monthNumber)
+                        viewmodel.GetDaysOfMonth(context,monthNumber)
                         viewmodel.backAllDays()
                         viewmodel.isLoadingFalse()
                     }

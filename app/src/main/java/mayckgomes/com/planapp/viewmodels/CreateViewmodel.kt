@@ -3,7 +3,10 @@ package mayckgomes.com.planapp.viewmodels
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +20,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 class CreateViewmodel(): ViewModel(){
-
-
 
     // months ======================================================================================
     val monthList = listOf(
@@ -83,7 +84,13 @@ class CreateViewmodel(): ViewModel(){
     private val _dayList = MutableStateFlow(emptyList<String>())
     val dayList = _dayList.asStateFlow()
 
-    fun GetDaysOfMonth(mes: Int){
+    fun GetDaysOfMonth(context: Context, mes: Int){
+
+        val viewmodel = UserViewModel()
+
+        val days = viewmodel.getDays(context)
+
+        Log.d("list", days.toString())
 
         val ano = LocalDate.now().year
 
@@ -94,29 +101,129 @@ class CreateViewmodel(): ViewModel(){
         // verifica se o dia pertence ao mes pedido
         while (data.monthValue == mes){
 
-            Log.d("day", data.lengthOfMonth().toString())
-            Log.d("day", data.dayOfMonth.toString())
+            Log.d("days", listaDias.toString())
+            Log.d("number", data.dayOfMonth.toString())
 
-            if (data.dayOfWeek == DayOfWeek.SUNDAY){
+            when{
+                data.dayOfWeek == DayOfWeek.MONDAY && days["segunda"] == true -> {
 
-                listaDias.add("${
-                    if (data.dayOfMonth < 10)"0${data.dayOfMonth}" else data.dayOfMonth
-                }/$mes - Domingo")
+                    listaDias.add(
+                        if (data.dayOfMonth < 10) {
 
-                data = data.plusDays(1)
+                            "0${data.dayOfMonth}/$mes - Segunda"
 
-            } else if (data.dayOfWeek == DayOfWeek.WEDNESDAY){
+                        } else {
+                            "${data.dayOfMonth}/$mes - Segunda"
 
-                listaDias.add("${
-                    if (data.dayOfMonth < 10)"0${data.dayOfMonth}" else data.dayOfMonth
-                }/$mes - Quarta")
+                        }
+                    )
 
-                data = data.plusDays(1)
+                    data = data.plusDays(1)
+                }
 
-            } else {
 
-                data = data.plusDays(1)
+                data.dayOfWeek == DayOfWeek.TUESDAY && days["terca"] == true -> {
 
+                    listaDias.add(
+                        if (data.dayOfMonth < 10) {
+
+                            "0${data.dayOfMonth}/$mes - Terça"
+
+                        } else {
+                            "${data.dayOfMonth}/$mes - Terça"
+
+                        }
+                    )
+
+                    data = data.plusDays(1)
+
+                }
+
+                data.dayOfWeek == DayOfWeek.WEDNESDAY && days["quarta"] == true -> {
+
+                    listaDias.add(
+                        if (data.dayOfMonth < 10) {
+
+                            "0${data.dayOfMonth}/$mes - Quarta"
+
+                        } else {
+                            "${data.dayOfMonth}/$mes - Quarta"
+
+                        }
+                    )
+
+                    data = data.plusDays(1)
+
+                }
+
+                data.dayOfWeek == DayOfWeek.THURSDAY && days["quinta"] == true -> {
+
+                    listaDias.add(
+                        if (data.dayOfMonth < 10) {
+
+                            "0${data.dayOfMonth}/$mes - Quinta"
+
+                        } else {
+                            "${data.dayOfMonth}/$mes - Quinta"
+
+                        }
+                    )
+
+                    data = data.plusDays(1)
+
+                }
+
+                data.dayOfWeek == DayOfWeek.FRIDAY && days["sexta"] == true -> {
+
+                    listaDias.add(
+                        if (data.dayOfMonth < 10) {
+
+                            "0${data.dayOfMonth}/$mes - Sexta"
+
+                        } else {
+                            "${data.dayOfMonth}/$mes - Sexta"
+
+                        }
+                    )
+
+                    data = data.plusDays(1)
+
+                }
+
+                data.dayOfWeek == DayOfWeek.SATURDAY && days["sabado"] == true -> {
+
+                    listaDias.add(
+                        if (data.dayOfMonth < 10) {
+
+                            "0${data.dayOfMonth}/$mes - Sábado"
+
+                        } else {
+                            "${data.dayOfMonth}/$mes - Sábado"
+
+                        }
+                    )
+
+                    data = data.plusDays(1)
+
+                }
+
+                data.dayOfWeek == DayOfWeek.SUNDAY && days["domingo"] == true -> {
+
+                    listaDias.add(
+                        if (data.dayOfMonth < 10) {
+
+                            "0${data.dayOfMonth}/$mes - Domingo"
+
+                        } else {
+                            "${data.dayOfMonth}/$mes - Domingo"
+
+                        }
+                    )
+
+                    data = data.plusDays(1)
+
+                }
+                else -> data = data.plusDays(1)
             }
 
         }

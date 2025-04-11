@@ -76,20 +76,11 @@ fun HomeScreen(navController: NavController){
         mutableStateOf(false)
     }
 
-    var isFirstTime by rememberSaveable {
-        mutableStateOf(false)
-    }
-
     var isChangeName by rememberSaveable {
         mutableStateOf(false)
     }
 
     LaunchedEffect(Unit) {
-        if (userViewmodel.VerifyFirstTime(context)){
-
-            isFirstTime = true
-
-        }
         userViewmodel.GetUserName(context)
         showViewmodel.GetAllDates(context)
     }
@@ -235,14 +226,6 @@ fun HomeScreen(navController: NavController){
             )
         }
 
-
-        if (isFirstTime){
-
-            InputDialogApp(onClick = {isFirstTime = false})
-
-            userViewmodel.SetFalseFirstTime(context)
-
-        }
         if (isChangeName){
 
             UpdateNameDialogApp(
