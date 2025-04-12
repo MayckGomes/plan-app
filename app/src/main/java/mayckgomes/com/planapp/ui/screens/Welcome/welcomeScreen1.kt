@@ -66,7 +66,7 @@ fun WelcomeScreen1(pager: PagerState) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(White)
                 .padding(57.dp)
         ) {
 

@@ -46,12 +46,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import mayckgomes.com.planapp.Create
 import mayckgomes.com.planapp.Edit
+import mayckgomes.com.planapp.Profile
 import mayckgomes.com.planapp.R
 import mayckgomes.com.planapp.View
 import mayckgomes.com.planapp.ui.elements.CardPlan
-import mayckgomes.com.planapp.ui.elements.InputDialogApp
 import mayckgomes.com.planapp.ui.elements.StyledText
-import mayckgomes.com.planapp.ui.elements.UpdateNameDialogApp
 import mayckgomes.com.planapp.ui.theme.Black
 import mayckgomes.com.planapp.ui.theme.Gray
 import mayckgomes.com.planapp.ui.theme.White
@@ -73,10 +72,6 @@ fun HomeScreen(navController: NavController){
     val context = LocalContext.current
 
     var isLoading by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    var isChangeName by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -103,7 +98,7 @@ fun HomeScreen(navController: NavController){
                             Toast.makeText(context, "Pressione e segure para mudar o nome!", Toast.LENGTH_LONG).show()
                         },
                         onLongClick = {
-                            isChangeName = true
+                            navController.navigate(Profile)
                         }
                     )
             )
@@ -226,16 +221,6 @@ fun HomeScreen(navController: NavController){
             )
         }
 
-        if (isChangeName){
-
-            UpdateNameDialogApp(
-                onClick = {
-                    isChangeName = false
-                    Toast.makeText(context, "Nome trocado com sucesso!", Toast.LENGTH_SHORT).show()
-                }
-            )
-
-        }
 
     }
 }

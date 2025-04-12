@@ -135,7 +135,10 @@ class EditViewmodel: ViewModel() {
         val db = GetDB(context)
 
         CoroutineScope(Dispatchers.IO).launch {
-            db.updateDays(_dayList.value)
+
+            db.clearDb()
+            db.addDays(_dayList.value)
+
         }
     }
 

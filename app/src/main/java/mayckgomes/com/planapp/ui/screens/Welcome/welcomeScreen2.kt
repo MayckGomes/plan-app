@@ -1,5 +1,6 @@
 package mayckgomes.com.planapp.ui.screens.Welcome
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,22 +19,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -60,13 +56,15 @@ fun WelcomeScreen2(pager: PagerState) {
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
+                    if (userName.isNotEmpty()){
+                        scope.launch {
 
-                    viewmodel.changeUserName(userName,context)
+                            viewmodel.changeUserName(userName,context)
+                            pager.scrollToPage(2)
 
-                    scope.launch {
-
-                        pager.scrollToPage(2)
-
+                        }
+                    } else {
+                        Toast.makeText(context, "Escreva seu nome primeiro!", Toast.LENGTH_SHORT).show()
                     }
                 },
                 containerColor = White,
@@ -86,7 +84,7 @@ fun WelcomeScreen2(pager: PagerState) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(White)
                 .padding(57.dp)
         ) {
 

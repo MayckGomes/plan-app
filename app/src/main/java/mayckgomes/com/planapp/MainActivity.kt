@@ -4,20 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,6 +16,7 @@ import mayckgomes.com.planapp.ui.screens.CreateScreen
 import mayckgomes.com.planapp.ui.screens.EditScreen
 import mayckgomes.com.planapp.ui.screens.HomeScreen
 import mayckgomes.com.planapp.ui.screens.ViewScreen
+import mayckgomes.com.planapp.ui.screens.Welcome.ProfileScreen
 import mayckgomes.com.planapp.ui.screens.Welcome.WelcomeMain
 import mayckgomes.com.planapp.ui.theme.PlanAppTheme
 import mayckgomes.com.planapp.viewmodels.UserViewModel
@@ -64,6 +55,9 @@ object Edit
 
 @Serializable
 object Register
+
+@Serializable
+object Profile
 
 @Composable
 fun Navigation(isFirstTime : Boolean){
@@ -104,6 +98,10 @@ fun Navigation(isFirstTime : Boolean){
 
             composable<Register>{
                 WelcomeMain(navControler)
+            }
+
+            composable<Profile>{
+                ProfileScreen(navControler)
             }
         }
 

@@ -2,46 +2,52 @@ package mayckgomes.com.planapp.ui.screens.Welcome
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import mayckgomes.com.planapp.ui.elements.StyledText
 import mayckgomes.com.planapp.ui.theme.Black
+import mayckgomes.com.planapp.ui.theme.DarkGray
 import mayckgomes.com.planapp.ui.theme.White
 import mayckgomes.com.planapp.viewmodels.UserViewModel
 
 @Composable
-fun WelcomeScreen3(pager: PagerState) {
-
-    val scope = rememberCoroutineScope()
+fun ProfileScreen(navController: NavController) {
 
     val context = LocalContext.current
 
-    val viewmodel = viewModel<UserViewModel>()
+    val viewmodel: UserViewModel = viewModel()
 
-    val userName = viewmodel.userName.collectAsState().value
+    var userName = viewmodel.userName.collectAsState().value
 
     val domingo = viewmodel.domingo.collectAsState().value
 
@@ -57,60 +63,75 @@ fun WelcomeScreen3(pager: PagerState) {
 
     val sabado = viewmodel.sabado.collectAsState().value
 
+    LaunchedEffect(Unit) {
 
-    Scaffold(
-        floatingActionButton = {
+        viewmodel.GetUserName(context)
+        viewmodel.getDays(context)
 
-            ExtendedFloatingActionButton(
-                onClick = {
-                    scope.launch {
+    }
 
-                        if (domingo || segunda || terca || quarta || quinta || sexta || sabado){
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = White)
+            .systemBarsPadding()
+            .padding(horizontal = 57.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
 
-                            viewmodel.setDays(context)
-                            pager.scrollToPage(3)
+        Spacer(Modifier.size(60.dp))
 
-                        } else {
-                            Toast.makeText(context, "Selecione pelo menos um dia!", Toast.LENGTH_SHORT).show()
-                        }
+        Icon(
+            imageVector = Icons.Outlined.AccountCircle,
+            contentDescription = "Profile",
+            modifier = Modifier.size(50.dp)
+        )
 
+        Spacer(Modifier.size(30.dp))
 
-
-                    }
-                },
-                containerColor = White,
-                contentColor = Black
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    StyledText("Próximo")
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "next")
-                }
-            }
-
+        StyledText(if (userName.isNotEmpty()){
+            userName
+        } else {
+            "Você ainda não escolheu um nome!"
         }
-    ) { padding ->
+            , fontSize = 24.sp)
+
+        Spacer(Modifier.size(60.dp))
+
+        StyledText(
+            text = "Novo nome",
+            fontSize = 16.sp,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth(1f),
+            value = userName,
+            onValueChange = { viewmodel.userNameUpdate(it) },
+            singleLine = true,
+            placeholder = { StyledText("Digite seu Nome...", color = DarkGray, fontSize = 12.sp) },
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedTextColor = Black,
+                focusedTextColor = Black
+            ),
+        )
+
+        Spacer(Modifier.size(40.dp))
+
+        StyledText(
+            text = "Dias Selecionados",
+            fontSize = 20.sp,
+            modifier = Modifier
+                .align(Alignment.Start)
+        )
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(White)
-                .padding(vertical = 57.dp, horizontal = 55.dp)
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.align(Alignment.Start)
         ) {
-
-            StyledText("Olá, $userName!", fontSize = 24.sp)
-
-            Spacer(Modifier.size(40.dp))
-
-            StyledText("Para finalizarmos,\nMostre quais dias da semana você\nbusca organizar.", fontSize = 16.sp)
-
-            Spacer(Modifier.size(40.dp))
-
-            StyledText("Isso poderá ser editado\nposteriormente, Não se preocupe.", fontSize = 16.sp)
-
-            Spacer(Modifier.size(20.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -232,8 +253,38 @@ fun WelcomeScreen3(pager: PagerState) {
 
             }
 
+        }
 
+        Spacer(Modifier.size(25.dp))
+
+        OutlinedButton(
+            onClick = {
+
+                if (domingo || segunda || terca || quarta || quinta || sexta || sabado || userName.isNotEmpty()){
+
+                    CoroutineScope(Dispatchers.IO).launch{
+                        viewmodel.changeUserName(userName, context)
+                        viewmodel.setDays(context)
+                    }
+                    navController.popBackStack()
+
+                }else if (userName.isEmpty()){
+
+                    Toast.makeText(context, "Digite um nome", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Toast.makeText(context, "Selecione pelo menos um dia!", Toast.LENGTH_SHORT).show()
+                }
+
+
+            },
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            StyledText("Salvar")
         }
 
     }
+
 }

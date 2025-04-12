@@ -55,7 +55,10 @@ fun WelcomeScreen4(navController: NavController) {
             ExtendedFloatingActionButton(
                 onClick = {
                     navController.navigate(Home)
-                    viewmodel.SetFalseFirstTime(context)
+
+                    scope.launch {
+                        viewmodel.SetFalseFirstTime(context)
+                    }
                 },
                 containerColor = White,
                 contentColor = Black
@@ -75,7 +78,7 @@ fun WelcomeScreen4(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(White)
                 .padding(56.dp)
         ) {
 

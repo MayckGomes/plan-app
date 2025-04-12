@@ -17,10 +17,6 @@ open class UserViewModel: ViewModel() {
         _userName.value = text
     }
 
-    fun userNameClear(){
-        _userName.value = ""
-    }
-
     fun changeUserName(name: String, context: Context){
         _userName.value = name
 
@@ -133,6 +129,14 @@ open class UserViewModel: ViewModel() {
     fun getDays(context: Context): SortedMap<String, Boolean> {
 
         val db = context.getSharedPreferences("daysOfWeek", Context.MODE_PRIVATE)
+
+        _domingo.value = db.getBoolean("domingo", false)
+        _segunda.value = db.getBoolean("segunda", false)
+        _terca.value = db.getBoolean("terca", false)
+        _quarta.value = db.getBoolean("quarta", false)
+        _quinta.value = db.getBoolean("quinta", false)
+        _sexta.value = db.getBoolean("sexta", false)
+        _sabado.value = db.getBoolean("sabado", false)
 
         return sortedMapOf(
             "segunda" to db.getBoolean("segunda", false),
