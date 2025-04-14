@@ -1,0 +1,38 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ] # ou sua branch principal (por exemplo, master)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Ambiente Linux para a build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11' # ou a versão do Java que seu projeto usa
+
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        sdk-api-level: '35' # Nível da API do Android que você deseja usar
+        ndk-version: 'latest'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew
+
+    - name: Build APK
+      run: ./gradlew assembleRelease # ou assembleDebug se quiser um APK de debug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release.apk # Nome do arquivo do artefato
+        path: app/build/outputs/apk/release/app-release.apk # Caminho para o APK gerado
+        
