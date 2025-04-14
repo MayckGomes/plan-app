@@ -1,38 +1,56 @@
-name: Build Android APK
+name: Build and Release APK
 
 on:
   push:
-    branches: [ main ] # ou sua branch principal (por exemplo, master)
+    branches:
+      - main  # ou a branch que você usa
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Ambiente Linux para a build
+    name: Build APK
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17' # ou a versão do Java que seu projeto usa
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-    - name: Set up Android SDK
-      uses: android-actions/setup-android@v3
-      with:
-        sdk-api-level: '33' # Nível da API do Android que você deseja usar
-        ndk-version: 'latest'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x ./gradlew
+      - name: Grant execute permission for Gradle
+        run: chmod +x ./gradlew
 
-    - name: Build APK
-      run: ./gradlew assembleRelease # ou assembleDebug se quiser um APK de debug
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-release.apk # Nome do arquivo do artefato
-        path: app/build/outputs/apk/release/app-release.apk # Caminho para o APK gerado
-        
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+  release:
+    name: Release APK
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-debug
+          path: app-debug
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: app-debug/app-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
