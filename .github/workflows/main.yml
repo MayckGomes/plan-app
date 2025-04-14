@@ -16,12 +16,12 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '11' # ou a versão do Java que seu projeto usa
+        java-version: '17' # ou a versão do Java que seu projeto usa
 
     - name: Set up Android SDK
       uses: android-actions/setup-android@v3
       with:
-        sdk-api-level: '35' # Nível da API do Android que você deseja usar
+        sdk-api-level: '33' # Nível da API do Android que você deseja usar
         ndk-version: 'latest'
 
     - name: Grant execute permission for gradlew
