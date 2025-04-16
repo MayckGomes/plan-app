@@ -34,7 +34,7 @@ class CreateViewmodel(): ViewModel(){
         "Agosto",
         "Setembro",
         "Outubro",
-        "Novenbro",
+        "Novembro",
         "Dezembro"
         )
 
