@@ -14,26 +14,36 @@
 ## UI
 
 - Welcome
+
 ---
+
     ![welcome1](images/welcome1.png)
     ![welcome2](images/welcome2.png)
     ![welcome3](images/welcome3.png)
     ![welcome4](images/welcome4.png)
 
 - Home
+
 ---
+
     ![menuVazio](images/menuEmpty.png)
     ![menuCheio](images/menuFull.png)
 
 - Create
+
 ---
+
     ![createVazio](images/createEmpty.png)
     ![createCheio](images/createFull.png)
 
 - Edit
+
 ---
+
     ![edit](images/edit.png)
 
 - View
+
 ---
+
     ![view](images/view.png)
